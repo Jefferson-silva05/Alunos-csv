@@ -1,8 +1,8 @@
 import csv
 
-def add(arq, ID, nome, notas):
-    novo_aluno = {"id": ID, "nome": nome, "1BIMESTRE": notas[0], "2BIMESTRE": notas[1], "3BIMESTRE": notas[2], "4BIMESTRE": notas[3]}
-    fieldnames = ["id", "nome", "1BIMESTRE", "2BIMESTRE", "3BIMESTRE", "4BIMESTRE"]
+def add(arq, ID, nome, notas, media):
+    novo_aluno = {"ID": ID, "NOME": nome, "1BIM": notas[0], "2BIM": notas[1], "3BIM": notas[2], "4BIM": notas[3], "MEDIA": media}
+    fieldnames = ["ID", "NOME", "1BIM", "2BIM", "3BIM", "4BIM", "MEDIA"]
     
     # Valida se o arquivo já possui conteúdo para decidir se precisa escrever o cabeçalho
     precisa_cabecalho = True
@@ -42,12 +42,21 @@ def Atualizar(arq, aluno_id, bimestre, nota):
         print("Erro: Nenhum dado encontrado ou arquivo inexistente.")
         return
         
-    bi = str(bimestre) + "BIMESTRE"
+    bi = str(bimestre) + "BIM"
     encontrado = False
     for linha in dados:
-        if linha["id"] == str(aluno_id):
+        if linha["ID"] == str(aluno_id):
             linha[bi] = str(nota)
+
+            media = (
+                float(linha["1BIM"]) +
+                float(linha["2BIM"]) +
+                float(linha["3BIM"]) +
+                float(linha["4BIM"])
+            ) / 4
+            linha["MEDIA"] = str(round(media, 1))
             encontrado = True
+            break
             
     if encontrado:
         salvar(arq, dados)
@@ -58,7 +67,7 @@ def Atualizar(arq, aluno_id, bimestre, nota):
 def salvar(arq, novos_dados):
     try:
         with open(arq, "w", newline="", encoding="utf-8") as a:
-            fieldnames = ["id", "nome", "1BIMESTRE", "2BIMESTRE", "3BIMESTRE", "4BIMESTRE"]
+            fieldnames = ["ID", "NOME", "1BIM", "2BIM", "3BIM", "4BIM", "MEDIA"]
             dados = csv.DictWriter(a, fieldnames=fieldnames)
             dados.writeheader()
             dados.writerows(novos_dados)
@@ -71,7 +80,7 @@ def excluir(arq, id_aluno):
         print("Erro: Nenhum dado encontrado ou arquivo inexistente.")
         return
         
-    novos_dados = [linha for linha in dados if linha["id"] != str(id_aluno)]
+    novos_dados = [linha for linha in dados if linha["ID"] != str(id_aluno)]
     
     if len(novos_dados) < len(dados):
         salvar(arq, novos_dados)

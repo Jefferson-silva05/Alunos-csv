@@ -50,7 +50,7 @@ def criarId(arq):
             dados = list(csv.DictReader(a))
             if not dados:
                 return 1
-            maior_id = max(int(linha["id"]) for linha in dados)
+            maior_id = max(int(linha["ID"]) for linha in dados)
             return maior_id + 1
     except (FileNotFoundError, ValueError, KeyError):
         return 1
